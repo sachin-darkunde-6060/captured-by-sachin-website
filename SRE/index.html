@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRE Linux Handbook | Complete Linux Commands for Site Reliability Engineers</title>
+<meta name="description" content="Complete Linux Commands Handbook for Site Reliability Engineers. Learn Linux, Docker, Kubernetes, Git, Networking, Monitoring, and DevOps with practical examples.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+:root{
+  --bg:#0b1120;
+  --bg-secondary:#111827;
+  --bg-card:#111827;
+  --border:#1e293b;
+  --text:#f8fafc;
+  --text-dim:#94a3b8;
+  --accent:#38bdf8;
+  --accent-contrast:#0b1120;
+  --code-bg:#020617;
+  --code-text:#22c55e;
+  --shadow:rgba(0,0,0,.4);
+  --hero-grad:linear-gradient(135deg,#0ea5e9,#2563eb);
+  --stat-bg:rgba(255,255,255,.08);
+}
+body.light{
+  --bg:#f1f5f9;
+  --bg-secondary:#ffffff;
+  --bg-card:#ffffff;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --text-dim:#475569;
+  --accent:#0284c7;
+  --accent-contrast:#ffffff;
+  --code-bg:#0f172a;
+  --code-text:#4ade80;
+  --shadow:rgba(15,23,42,.12);
+  --hero-grad:linear-gradient(135deg,#38bdf8,#2563eb);
+  --stat-bg:rgba(255,255,255,.25);
+}
+
+body{
+  font-family:"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  transition:background .25s ease,color .25s ease;
+}
+
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-track{background:var(--bg-secondary);}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:20px;}
+
+header{
+  position:fixed;top:0;left:0;right:0;height:70px;
+  background:var(--bg-secondary);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;z-index:999;backdrop-filter:blur(18px);
+  gap:20px;
+}
+.logo{font-size:26px;font-weight:700;color:var(--accent);letter-spacing:1px;white-space:nowrap;}
+.search{width:350px;position:relative;}
+.search input{
+  width:100%;padding:12px 18px;border:none;outline:none;border-radius:8px;
+  background:var(--bg);color:var(--text);font-size:15px;border:1px solid var(--border);
+}
+.search-count{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  font-size:12px;color:var(--text-dim);pointer-events:none;
+}
+.toggle{
+  background:var(--accent);color:var(--accent-contrast);padding:10px 18px;
+  border:none;border-radius:8px;cursor:pointer;font-weight:700;transition:.3s;font-size:14px;
+}
+.toggle:hover{transform:translateY(-2px);}
+
+.sidebar{
+  position:fixed;left:0;top:70px;width:290px;bottom:0;
+  background:var(--bg-secondary);overflow:auto;
+  border-right:1px solid var(--border);padding:30px;
+}
+.sidebar h3{margin-bottom:20px;color:var(--accent);font-size:22px;}
+.sidebar ul{list-style:none;}
+.sidebar li{margin-bottom:6px;}
+.sidebar a{
+  color:var(--text-dim);text-decoration:none;font-size:15px;display:block;
+  padding:8px 12px;border-radius:8px;transition:.2s;
+}
+.sidebar a:hover,.sidebar a.active{background:var(--border);color:var(--text);}
+
+main{
+  margin-left:290px;padding-top:90px;padding-left:50px;padding-right:50px;padding-bottom:80px;
+  max-width:1400px;
+}
+
+.hero{
+  background:var(--hero-grad);padding:60px;border-radius:18px;margin-bottom:45px;
+  box-shadow:0 20px 50px var(--shadow);color:#f8fafc;
+}
+.hero h1{font-size:46px;margin-bottom:15px;}
+.hero p{font-size:18px;max-width:900px;opacity:.95;}
+.hero-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:35px;}
+.stat{background:var(--stat-bg);padding:20px;border-radius:12px;}
+.stat h2{font-size:36px;margin-bottom:10px;}
+.stat span{font-size:14px;}
+
+.section{margin-top:70px;}
+.section-title{font-size:34px;margin-bottom:12px;color:var(--accent);}
+.section-desc{margin-bottom:30px;color:var(--text-dim);}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px;}
+
+.card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  padding:28px;margin-bottom:0;transition:.3s;
+}
+.card:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 15px 40px var(--shadow);}
+.card h3{margin-bottom:15px;font-size:24px;color:var(--accent);}
+.card p{color:var(--text);margin-bottom:8px;}
+.card ul{margin:10px 0 10px 20px;color:var(--text-dim);}
+
+.command{
+  background:var(--code-bg);padding:16px 18px;border-radius:10px;
+  font-family:Consolas,Monaco,monospace;overflow:auto;margin:14px 0;
+  border-left:5px solid #22c55e;position:relative;display:flex;
+  align-items:center;justify-content:space-between;gap:10px;
+}
+.command code{font-size:15px;color:var(--code-text);white-space:pre;}
+.copy{
+  padding:6px 12px;background:var(--accent);color:var(--accent-contrast);border:none;
+  border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;flex-shrink:0;
+}
+.copy:hover{opacity:.85;}
+.copy.copied{background:#22c55e;}
+
+.badge{display:inline-block;padding:5px 12px;border-radius:50px;font-size:13px;margin-right:10px;margin-top:10px;color:#fff;}
+.beginner{background:#16a34a;}
+.intermediate{background:#ca8a04;}
+.advanced{background:#dc2626;}
+
+.workflow-list{margin:12px 0 12px 20px;}
+.workflow-list li{margin-bottom:10px;color:var(--text-dim);}
+
+.cheat-table{width:100%;border-collapse:collapse;margin-top:10px;}
+.cheat-table th,.cheat-table td{
+  text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);font-size:14px;
+}
+.cheat-table th{color:var(--accent);}
+.cheat-table td:first-child{font-family:Consolas,monospace;color:var(--code-text);white-space:nowrap;}
+
+footer{margin-top:100px;text-align:center;padding:50px;border-top:1px solid var(--border);color:var(--text-dim);}
+
+.hidden-card{display:none !important;}
+.no-results{display:none;color:var(--text-dim);font-size:16px;padding:20px 0;}
+.no-results.show{display:block;}
+
+@media(max-width:1100px){
+  .sidebar{display:none;}
+  main{margin-left:0;padding:100px 20px;}
+  .hero-grid{grid-template-columns:repeat(2,1fr);}
+  .search{display:none;}
+}
+@media(max-width:700px){
+  .hero{padding:35px;}
+  .hero h1{font-size:34px;}
+  .hero-grid{grid-template-columns:1fr;}
+  header{padding:15px;}
+  .logo{font-size:18px;}
+  .toggle{padding:8px 12px;font-size:13px;}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🚀 SRE Linux Handbook</div>
+  <div class="search">
+    <input type="text" id="searchBox" placeholder="Search Linux Commands...">
+  </div>
+  <button class="toggle" id="themeToggle">🌙 Dark</button>
+</header>
+
+<aside class="sidebar">
+  <h3>Contents</h3>
+  <ul>
+    <li><a href="#file">📁 File Commands</a></li>
+    <li><a href="#view">📄 File Viewing</a></li>
+    <li><a href="#text">📝 Text Processing</a></li>
+    <li><a href="#permission">🔐 Permissions</a></li>
+    <li><a href="#users">👤 Users</a></li>
+    <li><a href="#process">⚙ Process</a></li>
+    <li><a href="#memory">🧠 Memory</a></li>
+    <li><a href="#cpu">🔥 CPU</a></li>
+    <li><a href="#disk">💽 Disk</a></li>
+    <li><a href="#network">🌐 Networking</a></li>
+    <li><a href="#dns">🌍 DNS</a></li>
+    <li><a href="#services">🛠 Services</a></li>
+    <li><a href="#logs">📜 Logs</a></li>
+    <li><a href="#package">📦 Package Manager</a></li>
+    <li><a href="#ssh">🔑 SSH</a></li>
+    <li><a href="#cron">⏰ Cron</a></li>
+    <li><a href="#compression">🗜 Compression</a></li>
+    <li><a href="#env">🌱 Environment Variables</a></li>
+    <li><a href="#performance">📈 Performance</a></li>
+    <li><a href="#curl">🌍 Curl & APIs</a></li>
+    <li><a href="#docker">🐳 Docker</a></li>
+    <li><a href="#kubernetes">☸ Kubernetes</a></li>
+    <li><a href="#git">🌿 Git</a></li>
+    <li><a href="#workflow">🚨 SRE Workflow</a></li>
+    <li><a href="#cheatsheet">📘 Cheat Sheet</a></li>
+  </ul>
+</aside>
+
+<main>
+  <section class="hero">
+    <h1>Linux Commands for Site Reliability Engineers</h1>
+    <p>
+      Master Linux like an SRE at Google, Microsoft, Amazon, IBM, Visa,
+      Mastercard, Goldman Sachs, Oracle, and other top technology companies.
+      Everything from beginner Linux commands to advanced production
+      troubleshooting, Kubernetes, Docker, Networking,
+      Performance Monitoring, and DevOps.
+    </p>
+    <div class="hero-grid">
+      <div class="stat"><h2>200+</h2><span>Linux Commands</span></div>
+      <div class="stat"><h2>25+</h2><span>Categories</span></div>
+      <div class="stat"><h2>400+</h2><span>Examples</span></div>
+      <div class="stat"><h2>100%</h2><span>SRE Focused</span></div>
+    </div>
+  </section>
+
+  <div id="noResults" class="no-results">No commands match your search. Try a different keyword.</div>
+
+  <!-- FILE & DIRECTORY COMMANDS -->
+  <section class="section" id="file">
+    <h2 class="section-title">📁 File & Directory Commands</h2>
+    <p class="section-desc">Navigate the file system, create, copy, move, delete and locate files.</p>
+    <div class="card-grid">
+      <div class="card"><h3>pwd</h3><p>Print the current working directory.</p>
+        <div class="command"><code>pwd</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>ls</h3><p>Lists files and folders.</p>
+        <div class="command"><code>ls</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>ls -l</h3><p>Shows detailed file information: permissions, owner, group, size, date, filename.</p>
+        <div class="command"><code>ls -l</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>ls -la</h3><p>Shows hidden files including "." and "..".</p>
+        <div class="command"><code>ls -la</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>cd</h3><p>Changes current directory.</p>
+        <div class="command"><code>cd /var/log</code><button class="copy">Copy</button></div>
+        <div class="command"><code>cd ..</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>mkdir</h3><p>Create a new directory.</p>
+        <div class="command"><code>mkdir logs</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>rmdir</h3><p>Remove an empty directory.</p>
+        <div class="command"><code>rmdir logs</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>touch</h3><p>Create a new empty file.</p>
+        <div class="command"><code>touch index.html</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>cp</h3><p>Copy files.</p>
+        <div class="command"><code>cp source.txt destination.txt</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>cp -r</h3><p>Copy folders recursively.</p>
+        <div class="command"><code>cp -r folder1 folder2</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>mv</h3><p>Move or rename files.</p>
+        <div class="command"><code>mv old.txt new.txt</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>rm</h3><p>Delete files.</p>
+        <div class="command"><code>rm test.txt</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>rm -rf</h3><p>Delete folders recursively. Use with extreme caution in production.</p>
+        <div class="command"><code>rm -rf project/</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>find</h3><p>Search for files by name, type, size, or modification time.</p>
+        <div class="command"><code>find / -name nginx.conf</code><button class="copy">Copy</button></div>
+        <div class="command"><code>find . -mtime -1 -name "*.log"</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>locate</h3><p>Instantly locate files using a prebuilt database.</p>
+        <div class="command"><code>locate php.ini</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>tree</h3><p>Display directory structure as a tree.</p>
+        <div class="command"><code>tree -L 2</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+    </div>
+  </section>
+
+  <!-- FILE VIEWING -->
+  <section class="section" id="view">
+    <h2 class="section-title">📄 File Viewing Commands</h2>
+    <p class="section-desc">View log files, configuration files and application output.</p>
+    <div class="card-grid">
+      <div class="card"><h3>cat</h3><p>Display complete file contents.</p>
+        <div class="command"><code>cat app.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>less</h3><p>Scrollable file viewer, ideal for large logs.</p>
+        <div class="command"><code>less app.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>more</h3><p>Displays file page by page.</p>
+        <div class="command"><code>more app.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>head</h3><p>Shows the first 10 lines by default.</p>
+        <div class="command"><code>head -20 app.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>tail</h3><p>Shows the last 10 lines by default.</p>
+        <div class="command"><code>tail -50 app.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>tail -f ⭐</h3><p>Most important command for SREs. Continuously streams new log lines in real time while debugging production servers.</p>
+        <div class="command"><code>tail -f /var/log/nginx/access.log</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>nl</h3><p>Display file contents with line numbers.</p>
+        <div class="command"><code>nl app.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+    </div>
+  </section>
+
+  <!-- TEXT PROCESSING -->
+  <section class="section" id="text">
+    <h2 class="section-title">📝 Text Processing Commands</h2>
+    <p class="section-desc">Search logs, filter output, manipulate text, and analyze large datasets.</p>
+    <div class="card-grid">
+      <div class="card"><h3>grep</h3><p>Search for matching text in files. Find application errors quickly.</p>
+        <div class="command"><code>grep "ERROR" application.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>grep -i</h3><p>Case-insensitive search.</p>
+        <div class="command"><code>grep -i "failed" auth.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>grep -r</h3><p>Search recursively inside directories.</p>
+        <div class="command"><code>grep -r "database" /etc</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>grep -n</h3><p>Show matching line numbers.</p>
+        <div class="command"><code>grep -n "Exception" app.log</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>grep -v</h3><p>Invert match — show lines that do NOT match.</p>
+        <div class="command"><code>grep -v "DEBUG" app.log</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>awk</h3><p>Extract and process columns from files. Useful for parsing logs and reports.</p>
+        <div class="command"><code>awk '{print $1}' users.txt</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>sed</h3><p>Find and replace text in a stream or file.</p>
+        <div class="command"><code>sed 's/error/success/g' app.log</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>cut</h3><p>Extract specific columns using a delimiter.</p>
+        <div class="command"><code>cut -d ":" -f1 /etc/passwd</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>sort</h3><p>Sort text lines alphabetically or numerically.</p>
+        <div class="command"><code>sort -n users.txt</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>uniq</h3><p>Remove or count duplicate adjacent lines.</p>
+        <div class="command"><code>sort users.txt | uniq -c</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>wc -l</h3><p>Count number of lines in a file.</p>
+        <div class="command"><code>wc -l application.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>diff</h3><p>Compare two files line by line.</p>
+        <div class="command"><code>diff config_old.conf config_new.conf</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+    </div>
+  </section>
+
+  <!-- PERMISSIONS -->
+  <section class="section" id="permission">
+    <h2 class="section-title">🔐 File Permissions</h2>
+    <p class="section-desc">Manage ownership and access control during deployments and troubleshooting.</p>
+    <div class="card-grid">
+      <div class="card"><h3>chmod</h3><p>Change file permissions. 755 = Owner (rwx), Group (rx), Others (rx).</p>
+        <div class="command"><code>chmod 755 script.sh</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>chmod +x</h3><p>Make a file executable.</p>
+        <div class="command"><code>chmod +x deploy.sh</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>chown</h3><p>Change file owner and group.</p>
+        <div class="command"><code>chown ubuntu:ubuntu app.log</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>chgrp</h3><p>Change group ownership.</p>
+        <div class="command"><code>chgrp developers project</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>umask</h3><p>View or set default permission mask for new files.</p>
+        <div class="command"><code>umask 022</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- USERS -->
+  <section class="section" id="users">
+    <h2 class="section-title">👤 User Management</h2>
+    <p class="section-desc">Manage Linux users, groups, passwords, and privileges.</p>
+    <div class="card-grid">
+      <div class="card"><h3>whoami</h3><p>Display the current logged-in user.</p>
+        <div class="command"><code>whoami</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>id</h3><p>Display user ID (UID) and group information.</p>
+        <div class="command"><code>id</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>groups</h3><p>Display group memberships.</p>
+        <div class="command"><code>groups</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>passwd</h3><p>Change user password.</p>
+        <div class="command"><code>passwd username</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>useradd</h3><p>Create a new user.</p>
+        <div class="command"><code>sudo useradd -m sachin</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>usermod</h3><p>Modify an existing user, e.g. add to a group.</p>
+        <div class="command"><code>sudo usermod -aG docker sachin</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>userdel</h3><p>Delete a user account.</p>
+        <div class="command"><code>sudo userdel -r sachin</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>su</h3><p>Switch to another user.</p>
+        <div class="command"><code>su - root</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>sudo</h3><p>Run commands as superuser. Most frequently used command by SREs.</p>
+        <div class="command"><code>sudo systemctl restart nginx</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section" id="process">
+    <h2 class="section-title">⚙ Process Management</h2>
+    <p class="section-desc">Inspect, prioritize, and control running processes — critical for incident response.</p>
+    <div class="card-grid">
+      <div class="card"><h3>ps aux</h3><p>Show all running processes with owner, CPU and memory usage.</p>
+        <div class="command"><code>ps aux</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>ps -ef</h3><p>Show processes in full-format listing with parent PID.</p>
+        <div class="command"><code>ps -ef | grep nginx</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>top ⭐</h3><p>Live, interactive view of processes sorted by CPU usage.</p>
+        <div class="command"><code>top</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>htop</h3><p>Colorized, interactive process viewer with tree view (may need install).</p>
+        <div class="command"><code>htop</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>kill</h3><p>Send a termination signal to a process by PID.</p>
+        <div class="command"><code>kill 1234</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>kill -9</h3><p>Force kill a process immediately (SIGKILL). Last resort.</p>
+        <div class="command"><code>kill -9 1234</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>pkill</h3><p>Kill processes matching a name pattern.</p>
+        <div class="command"><code>pkill -f "node server.js"</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>nice / renice</h3><p>Set or change process scheduling priority.</p>
+        <div class="command"><code>nice -n 10 ./backup.sh</code><button class="copy">Copy</button></div>
+        <div class="command"><code>renice -n 5 -p 1234</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>nohup</h3><p>Run a command immune to hangups, so it keeps running after logout.</p>
+        <div class="command"><code>nohup ./deploy.sh &</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>jobs / fg / bg</h3><p>Manage background and foreground shell jobs.</p>
+        <div class="command"><code>jobs</code><button class="copy">Copy</button></div>
+        <div class="command"><code>fg %1</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+    </div>
+  </section>
+
+  <!-- MEMORY -->
+  <section class="section" id="memory">
+    <h2 class="section-title">🧠 Memory Commands</h2>
+    <p class="section-desc">Diagnose memory pressure, leaks, and swap usage on production hosts.</p>
+    <div class="card-grid">
+      <div class="card"><h3>free -h</h3><p>Show total, used, and available memory in human-readable form.</p>
+        <div class="command"><code>free -h</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>vmstat</h3><p>Report virtual memory, process, and swap statistics.</p>
+        <div class="command"><code>vmstat 2 5</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>cat /proc/meminfo</h3><p>Detailed kernel-level memory statistics.</p>
+        <div class="command"><code>cat /proc/meminfo</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>smem</h3><p>Show proportional memory usage per process (more accurate than top).</p>
+        <div class="command"><code>smem -r -k</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>swapon -s</h3><p>Show active swap space usage.</p>
+        <div class="command"><code>swapon -s</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+    </div>
+  </section>
+
+  <!-- CPU -->
+  <section class="section" id="cpu">
+    <h2 class="section-title">🔥 CPU Commands</h2>
+    <p class="section-desc">Understand CPU load, cores, and per-core utilization during high-traffic incidents.</p>
+    <div class="card-grid">
+      <div class="card"><h3>lscpu</h3><p>Display CPU architecture details: cores, threads, sockets, model.</p>
+        <div class="command"><code>lscpu</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>nproc</h3><p>Print the number of available processing units.</p>
+        <div class="command"><code>nproc</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>uptime</h3><p>Show system uptime and 1/5/15-minute load averages.</p>
+        <div class="command"><code>uptime</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>mpstat</h3><p>Report per-CPU utilization statistics.</p>
+        <div class="command"><code>mpstat -P ALL 2</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>sar -u</h3><p>Historical CPU usage report (requires sysstat).</p>
+        <div class="command"><code>sar -u 2 5</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- DISK -->
+  <section class="section" id="disk">
+    <h2 class="section-title">💽 Disk Commands</h2>
+    <p class="section-desc">Monitor disk space, partitions, and mounts to prevent "disk full" outages.</p>
+    <div class="card-grid">
+      <div class="card"><h3>df -h ⭐</h3><p>Show disk space usage per mounted filesystem, human-readable.</p>
+        <div class="command"><code>df -h</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>du -sh</h3><p>Show total size of a directory.</p>
+        <div class="command"><code>du -sh /var/log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>du -h --max-depth=1</h3><p>Find which subdirectories are consuming the most space.</p>
+        <div class="command"><code>du -h --max-depth=1 /var | sort -rh</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>lsblk</h3><p>List block devices and their mount points in tree form.</p>
+        <div class="command"><code>lsblk</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>fdisk -l</h3><p>List disk partitions and partition tables.</p>
+        <div class="command"><code>sudo fdisk -l</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>mount / umount</h3><p>Mount or unmount a filesystem.</p>
+        <div class="command"><code>sudo mount /dev/sdb1 /mnt/data</code><button class="copy">Copy</button></div>
+        <div class="command"><code>sudo umount /mnt/data</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>fsck</h3><p>Check and repair a filesystem (run on an unmounted device).</p>
+        <div class="command"><code>sudo fsck /dev/sdb1</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- NETWORK -->
+  <section class="section" id="network">
+    <h2 class="section-title">🌐 Networking Commands</h2>
+    <p class="section-desc">Diagnose connectivity, open ports, and routing issues.</p>
+    <div class="card-grid">
+      <div class="card"><h3>ip a</h3><p>Show all network interfaces and IP addresses.</p>
+        <div class="command"><code>ip a</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>ifconfig</h3><p>Legacy tool to show/configure network interfaces.</p>
+        <div class="command"><code>ifconfig</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>ss -tulnp ⭐</h3><p>Show listening TCP/UDP ports and the process using each one.</p>
+        <div class="command"><code>ss -tulnp</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>netstat -tulnp</h3><p>Legacy equivalent of ss for listening ports.</p>
+        <div class="command"><code>netstat -tulnp</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>ping</h3><p>Test reachability of a host.</p>
+        <div class="command"><code>ping -c 4 google.com</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>traceroute</h3><p>Trace the network path/hops to a destination.</p>
+        <div class="command"><code>traceroute google.com</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>curl -I</h3><p>Fetch only response headers to check a service's health.</p>
+        <div class="command"><code>curl -I https://example.com</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>iptables -L</h3><p>List firewall rules currently in effect.</p>
+        <div class="command"><code>sudo iptables -L -n -v</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- DNS -->
+  <section class="section" id="dns">
+    <h2 class="section-title">🌍 DNS Commands</h2>
+    <p class="section-desc">Troubleshoot name resolution failures — one of the most common production issues.</p>
+    <div class="card-grid">
+      <div class="card"><h3>dig ⭐</h3><p>Query DNS records with detailed resolver information.</p>
+        <div class="command"><code>dig example.com</code><button class="copy">Copy</button></div>
+        <div class="command"><code>dig example.com MX</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>nslookup</h3><p>Simple DNS lookup tool.</p>
+        <div class="command"><code>nslookup example.com</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>host</h3><p>Lightweight DNS lookup utility.</p>
+        <div class="command"><code>host example.com</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>/etc/resolv.conf</h3><p>View configured DNS resolvers.</p>
+        <div class="command"><code>cat /etc/resolv.conf</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>/etc/hosts</h3><p>View or edit static hostname-to-IP mappings.</p>
+        <div class="command"><code>cat /etc/hosts</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section" id="services">
+    <h2 class="section-title">🛠 Service Management (systemd)</h2>
+    <p class="section-desc">Start, stop, and inspect the services running on a host.</p>
+    <div class="card-grid">
+      <div class="card"><h3>systemctl status</h3><p>Check whether a service is running and view recent log lines.</p>
+        <div class="command"><code>systemctl status nginx</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>systemctl start/stop/restart</h3><p>Control a service's running state.</p>
+        <div class="command"><code>sudo systemctl restart nginx</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>systemctl enable/disable</h3><p>Configure a service to start (or not) automatically at boot.</p>
+        <div class="command"><code>sudo systemctl enable nginx</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>systemctl list-units</h3><p>List all active systemd units.</p>
+        <div class="command"><code>systemctl list-units --type=service</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>systemctl daemon-reload</h3><p>Reload systemd manager configuration after editing a unit file.</p>
+        <div class="command"><code>sudo systemctl daemon-reload</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- LOGS -->
+  <section class="section" id="logs">
+    <h2 class="section-title">📜 Log Management</h2>
+    <p class="section-desc">Access system and application logs to trace down root causes.</p>
+    <div class="card-grid">
+      <div class="card"><h3>journalctl -u ⭐</h3><p>Show systemd journal logs for a specific service.</p>
+        <div class="command"><code>journalctl -u nginx -n 100</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>journalctl -f</h3><p>Follow the journal live, similar to tail -f.</p>
+        <div class="command"><code>journalctl -f</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>journalctl -xe</h3><p>Show the most recent journal entries with extra explanatory detail — great right after a failure.</p>
+        <div class="command"><code>journalctl -xe</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>dmesg</h3><p>Show kernel ring buffer messages, useful for hardware/driver issues.</p>
+        <div class="command"><code>dmesg | tail -50</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>/var/log/syslog</h3><p>Classic system-wide log file on Debian/Ubuntu systems.</p>
+        <div class="command"><code>tail -f /var/log/syslog</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>logrotate</h3><p>Test or trigger log rotation to control log file growth.</p>
+        <div class="command"><code>logrotate -d /etc/logrotate.conf</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- PACKAGE MANAGER -->
+  <section class="section" id="package">
+    <h2 class="section-title">📦 Package Manager Commands</h2>
+    <p class="section-desc">Install, update, and audit software packages.</p>
+    <div class="card-grid">
+      <div class="card"><h3>apt update / upgrade</h3><p>Refresh the package index and upgrade installed packages (Debian/Ubuntu).</p>
+        <div class="command"><code>sudo apt update && sudo apt upgrade -y</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>apt install / remove</h3><p>Install or remove a package.</p>
+        <div class="command"><code>sudo apt install htop</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>apt list --installed</h3><p>List all installed packages.</p>
+        <div class="command"><code>apt list --installed</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>dpkg -l</h3><p>List packages managed by dpkg with version info.</p>
+        <div class="command"><code>dpkg -l | grep nginx</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>yum / dnf install</h3><p>Install a package on RHEL/CentOS/Fedora systems.</p>
+        <div class="command"><code>sudo yum install nginx</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>rpm -qa</h3><p>List all installed RPM packages.</p>
+        <div class="command"><code>rpm -qa | grep openssl</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- SSH -->
+  <section class="section" id="ssh">
+    <h2 class="section-title">🔑 SSH Commands</h2>
+    <p class="section-desc">Securely connect to and transfer files between remote servers.</p>
+    <div class="card-grid">
+      <div class="card"><h3>ssh</h3><p>Connect to a remote host over SSH.</p>
+        <div class="command"><code>ssh ubuntu@192.168.1.10</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>ssh -i</h3><p>Connect using a specific private key file.</p>
+        <div class="command"><code>ssh -i key.pem ubuntu@192.168.1.10</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>ssh-keygen</h3><p>Generate a new SSH key pair.</p>
+        <div class="command"><code>ssh-keygen -t ed25519 -C "sre@company.com"</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>ssh-copy-id</h3><p>Copy your public key to a remote server for passwordless login.</p>
+        <div class="command"><code>ssh-copy-id ubuntu@192.168.1.10</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>scp</h3><p>Securely copy files between hosts.</p>
+        <div class="command"><code>scp report.csv ubuntu@server:/home/ubuntu/</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>sftp</h3><p>Interactive secure file transfer session.</p>
+        <div class="command"><code>sftp ubuntu@192.168.1.10</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+    </div>
+  </section>
+
+  <!-- CRON -->
+  <section class="section" id="cron">
+    <h2 class="section-title">⏰ Cron & Scheduling</h2>
+    <p class="section-desc">Automate recurring tasks like backups, cleanups, and health checks.</p>
+    <div class="card-grid">
+      <div class="card"><h3>crontab -e</h3><p>Edit the current user's scheduled cron jobs.</p>
+        <div class="command"><code>crontab -e</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>crontab -l</h3><p>List the current user's scheduled cron jobs.</p>
+        <div class="command"><code>crontab -l</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>Cron syntax</h3><p>Format: minute hour day month weekday command.</p>
+        <div class="command"><code>0 2 * * * /home/ubuntu/backup.sh</code><button class="copy">Copy</button></div>
+        <p>Runs daily at 2:00 AM.</p>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>/etc/cron.d</h3><p>System-wide cron job directory, run as the specified user.</p>
+        <div class="command"><code>ls /etc/cron.d</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- COMPRESSION -->
+  <section class="section" id="compression">
+    <h2 class="section-title">🗜 Compression & Archiving</h2>
+    <p class="section-desc">Package and compress files for backups and transfers.</p>
+    <div class="card-grid">
+      <div class="card"><h3>tar -czvf</h3><p>Create a compressed .tar.gz archive.</p>
+        <div class="command"><code>tar -czvf backup.tar.gz /var/www</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>tar -xzvf</h3><p>Extract a .tar.gz archive.</p>
+        <div class="command"><code>tar -xzvf backup.tar.gz</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>zip / unzip</h3><p>Create or extract a .zip archive.</p>
+        <div class="command"><code>zip -r site.zip ./site</code><button class="copy">Copy</button></div>
+        <div class="command"><code>unzip site.zip</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>gzip / gunzip</h3><p>Compress or decompress a single file.</p>
+        <div class="command"><code>gzip app.log</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+    </div>
+  </section>
+
+  <!-- ENV VARIABLES -->
+  <section class="section" id="env">
+    <h2 class="section-title">🌱 Environment Variables</h2>
+    <p class="section-desc">Configure shell and application behavior without editing code.</p>
+    <div class="card-grid">
+      <div class="card"><h3>env / printenv</h3><p>List all environment variables.</p>
+        <div class="command"><code>printenv</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>export</h3><p>Set an environment variable for the current shell session.</p>
+        <div class="command"><code>export NODE_ENV=production</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>echo $PATH</h3><p>Display the executable search path.</p>
+        <div class="command"><code>echo $PATH</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>~/.bashrc / ~/.bash_profile</h3><p>Persist environment variables across shell sessions.</p>
+        <div class="command"><code>echo 'export PATH=$PATH:/opt/tools' >> ~/.bashrc</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>source</h3><p>Reload a shell config file without starting a new session.</p>
+        <div class="command"><code>source ~/.bashrc</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+    </div>
+  </section>
+
+  <!-- PERFORMANCE -->
+  <section class="section" id="performance">
+    <h2 class="section-title">📈 Performance Monitoring</h2>
+    <p class="section-desc">Combine tools to build a full picture of system health during load spikes.</p>
+    <div class="card-grid">
+      <div class="card"><h3>uptime</h3><p>Quick check of system load average over 1/5/15 minutes.</p>
+        <div class="command"><code>uptime</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>iostat</h3><p>Report CPU and disk I/O statistics (requires sysstat).</p>
+        <div class="command"><code>iostat -xz 2</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>vmstat</h3><p>Snapshot of processes, memory, swap, and CPU together.</p>
+        <div class="command"><code>vmstat 1 10</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>sar</h3><p>Collect and report historical system activity (requires sysstat).</p>
+        <div class="command"><code>sar -n DEV 2 5</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>top / htop</h3><p>Real-time combined view of CPU, memory, and processes.</p>
+        <div class="command"><code>top -o %CPU</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+    </div>
+  </section>
+
+  <!-- CURL & APIs -->
+  <section class="section" id="curl">
+    <h2 class="section-title">🌍 Curl & API Testing</h2>
+    <p class="section-desc">Test APIs, health checks, and webhooks directly from the terminal.</p>
+    <div class="card-grid">
+      <div class="card"><h3>curl GET</h3><p>Send a GET request to an endpoint.</p>
+        <div class="command"><code>curl https://api.example.com/health</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>curl -X POST</h3><p>Send a POST request with a JSON body.</p>
+        <div class="command"><code>curl -X POST -H "Content-Type: application/json" -d '{"key":"value"}' https://api.example.com/data</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>curl -H</h3><p>Add a custom header, e.g. for authentication.</p>
+        <div class="command"><code>curl -H "Authorization: Bearer TOKEN" https://api.example.com</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>curl -o</h3><p>Save the response to a file.</p>
+        <div class="command"><code>curl -o report.json https://api.example.com/report</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>curl -I</h3><p>Fetch response headers only, useful for quick health checks.</p>
+        <div class="command"><code>curl -I https://api.example.com</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>wget</h3><p>Download a file from a URL.</p>
+        <div class="command"><code>wget https://example.com/file.tar.gz</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+    </div>
+  </section>
+
+  <!-- DOCKER -->
+  <section class="section" id="docker">
+    <h2 class="section-title">🐳 Docker Commands</h2>
+    <p class="section-desc">Manage containers, images, and logs in containerized environments.</p>
+    <div class="card-grid">
+      <div class="card"><h3>docker ps</h3><p>List running containers.</p>
+        <div class="command"><code>docker ps -a</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>docker images</h3><p>List locally available images.</p>
+        <div class="command"><code>docker images</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>docker run</h3><p>Create and start a container from an image.</p>
+        <div class="command"><code>docker run -d -p 8080:80 --name web nginx</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>docker exec</h3><p>Run a command inside a running container.</p>
+        <div class="command"><code>docker exec -it web bash</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>docker logs</h3><p>View a container's logs.</p>
+        <div class="command"><code>docker logs -f web</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>docker stop / rm</h3><p>Stop and remove a container.</p>
+        <div class="command"><code>docker stop web && docker rm web</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>docker build</h3><p>Build an image from a Dockerfile.</p>
+        <div class="command"><code>docker build -t myapp:latest .</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>docker inspect</h3><p>Show detailed low-level information on a container or image.</p>
+        <div class="command"><code>docker inspect web</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>docker-compose up</h3><p>Start all services defined in a docker-compose.yml file.</p>
+        <div class="command"><code>docker-compose up -d</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>docker system prune</h3><p>Remove unused containers, images, and networks to free disk space.</p>
+        <div class="command"><code>docker system prune -a</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- KUBERNETES -->
+  <section class="section" id="kubernetes">
+    <h2 class="section-title">☸ Kubernetes Commands</h2>
+    <p class="section-desc">Operate and troubleshoot workloads running on Kubernetes clusters.</p>
+    <div class="card-grid">
+      <div class="card"><h3>kubectl get pods</h3><p>List pods in the current namespace.</p>
+        <div class="command"><code>kubectl get pods -n production</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>kubectl get nodes</h3><p>List cluster nodes and their status.</p>
+        <div class="command"><code>kubectl get nodes -o wide</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>kubectl describe</h3><p>Show detailed information and recent events for a resource.</p>
+        <div class="command"><code>kubectl describe pod my-app-7d9f -n production</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>kubectl logs ⭐</h3><p>View logs from a pod or specific container.</p>
+        <div class="command"><code>kubectl logs -f my-app-7d9f -n production</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>kubectl exec</h3><p>Run a command inside a running pod.</p>
+        <div class="command"><code>kubectl exec -it my-app-7d9f -- sh</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>kubectl apply -f</h3><p>Create or update resources from a manifest file.</p>
+        <div class="command"><code>kubectl apply -f deployment.yaml</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>kubectl delete</h3><p>Delete a resource.</p>
+        <div class="command"><code>kubectl delete pod my-app-7d9f -n production</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>kubectl rollout restart</h3><p>Roll pods in a deployment without downtime, e.g. after a config change.</p>
+        <div class="command"><code>kubectl rollout restart deployment/my-app</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>kubectl top</h3><p>Show live CPU/memory usage per pod or node (needs metrics-server).</p>
+        <div class="command"><code>kubectl top pods -n production</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- GIT -->
+  <section class="section" id="git">
+    <h2 class="section-title">🌿 Git Commands</h2>
+    <p class="section-desc">Version control commands used daily for deployments and configuration-as-code.</p>
+    <div class="card-grid">
+      <div class="card"><h3>git status</h3><p>Show changed, staged, and untracked files.</p>
+        <div class="command"><code>git status</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>git add</h3><p>Stage changes for the next commit.</p>
+        <div class="command"><code>git add .</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>git commit</h3><p>Save staged changes with a message.</p>
+        <div class="command"><code>git commit -m "fix: correct nginx config"</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>git push / pull</h3><p>Sync commits with a remote repository.</p>
+        <div class="command"><code>git push origin main</code><button class="copy">Copy</button></div>
+        <div class="command"><code>git pull origin main</code><button class="copy">Copy</button></div>
+        <span class="badge beginner">Beginner</span></div>
+      <div class="card"><h3>git branch / checkout</h3><p>Create or switch between branches.</p>
+        <div class="command"><code>git checkout -b hotfix/timeout</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>git merge</h3><p>Merge one branch's changes into the current branch.</p>
+        <div class="command"><code>git merge hotfix/timeout</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>git log</h3><p>View commit history.</p>
+        <div class="command"><code>git log --oneline --graph --all</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>git diff</h3><p>Show unstaged changes between commits or working tree.</p>
+        <div class="command"><code>git diff HEAD~1</code><button class="copy">Copy</button></div>
+        <span class="badge intermediate">Intermediate</span></div>
+      <div class="card"><h3>git stash</h3><p>Temporarily shelve uncommitted changes.</p>
+        <div class="command"><code>git stash && git stash pop</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+      <div class="card"><h3>git revert</h3><p>Safely undo a commit by creating a new inverse commit — safer than reset for shared branches.</p>
+        <div class="command"><code>git revert HEAD</code><button class="copy">Copy</button></div>
+        <span class="badge advanced">Advanced</span></div>
+    </div>
+  </section>
+
+  <!-- SRE WORKFLOW -->
+  <section class="section" id="workflow">
+    <h2 class="section-title">🚨 SRE Incident Response Workflow</h2>
+    <p class="section-desc">A practical command-driven checklist for a production incident.</p>
+    <div class="card-grid">
+      <div class="card">
+        <h3>1. Triage</h3>
+        <ul class="workflow-list">
+          <li>Check service health: <code>systemctl status app</code></li>
+          <li>Check load: <code>uptime</code>, <code>top</code></li>
+          <li>Check recent errors: <code>journalctl -u app -n 200</code></li>
+        </ul>
+        <span class="badge beginner">Step 1</span>
+      </div>
+      <div class="card">
+        <h3>2. Isolate</h3>
+        <ul class="workflow-list">
+          <li>Check network/ports: <code>ss -tulnp</code></li>
+          <li>Check disk space: <code>df -h</code></li>
+          <li>Check memory: <code>free -h</code></li>
+        </ul>
+        <span class="badge intermediate">Step 2</span>
+      </div>
+      <div class="card">
+        <h3>3. Mitigate</h3>
+        <ul class="workflow-list">
+          <li>Restart the affected service: <code>systemctl restart app</code></li>
+          <li>Rollout restart in Kubernetes: <code>kubectl rollout restart deployment/app</code></li>
+          <li>Scale up if resource-bound.</li>
+        </ul>
+        <span class="badge intermediate">Step 3</span>
+      </div>
+      <div class="card">
+        <h3>4. Root Cause</h3>
+        <ul class="workflow-list">
+          <li>Stream live logs: <code>tail -f app.log</code></li>
+          <li>Grep for the error pattern: <code>grep -n "Exception" app.log</code></li>
+          <li>Correlate with a recent deploy: <code>git log --oneline -5</code></li>
+        </ul>
+        <span class="badge advanced">Step 4</span>
+      </div>
+      <div class="card">
+        <h3>5. Document</h3>
+        <ul class="workflow-list">
+          <li>Write a postmortem: timeline, impact, root cause, action items.</li>
+          <li>Add monitoring/alerts to catch it earlier next time.</li>
+          <li>Share learnings with the team.</li>
+        </ul>
+        <span class="badge advanced">Step 5</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHEAT SHEET -->
+  <section class="section" id="cheatsheet">
+    <h2 class="section-title">📘 Quick Cheat Sheet</h2>
+    <p class="section-desc">The commands SREs reach for first during an incident.</p>
+    <div class="card">
+      <table class="cheat-table">
+        <tr><th>Command</th><th>What it does</th></tr>
+        <tr><td>top / htop</td><td>Live CPU & process view</td></tr>
+        <tr><td>free -h</td><td>Memory usage</td></tr>
+        <tr><td>df -h</td><td>Disk space per mount</td></tr>
+        <tr><td>tail -f file.log</td><td>Live log stream</td></tr>
+        <tr><td>ss -tulnp</td><td>Listening ports & owning process</td></tr>
+        <tr><td>systemctl status svc</td><td>Service health</td></tr>
+        <tr><td>journalctl -xe</td><td>Recent system errors</td></tr>
+        <tr><td>kubectl get pods</td><td>Pod status in cluster</td></tr>
+        <tr><td>docker logs -f</td><td>Live container logs</td></tr>
+        <tr><td>curl -I url</td><td>Quick health check</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Built for DevOps Engineers • Cloud Engineers • Linux Administrators • Site Reliability Engineers
+  </footer>
+</main>
+
+<script>
+(function(){
+  // Theme toggle
+  var body = document.body;
+  var themeBtn = document.getElementById('themeToggle');
+  themeBtn.addEventListener('click', function(){
+    body.classList.toggle('light');
+    if(body.classList.contains('light')){
+      themeBtn.textContent = '☀️ Light';
+    } else {
+      themeBtn.textContent = '🌙 Dark';
+    }
+  });
+
+  // Copy-to-clipboard for every command block
+  document.querySelectorAll('.command').forEach(function(block){
+    var btn = block.querySelector('.copy');
+    var code = block.querySelector('code');
+    if(!btn || !code) return;
+    btn.addEventListener('click', function(){
+      var text = code.textContent.trim();
+      navigator.clipboard.writeText(text).then(function(){
+        var original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function(){
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      }).catch(function(){
+        // Fallback for environments without clipboard API
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'Copied!';
+        setTimeout(function(){ btn.textContent = 'Copy'; }, 1500);
+      });
+    });
+  });
+
+  // Live search across all cards
+  var searchBox = document.getElementById('searchBox');
+  var noResults = document.getElementById('noResults');
+  var allCards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var allSections = Array.prototype.slice.call(document.querySelectorAll('.section'));
+
+  searchBox.addEventListener('input', function(){
+    var q = searchBox.value.trim().toLowerCase();
+    var visibleCount = 0;
+
+    allCards.forEach(function(card){
+      var text = card.textContent.toLowerCase();
+      var match = q === '' || text.indexOf(q) !== -1;
+      card.classList.toggle('hidden-card', !match);
+      if(match) visibleCount++;
+    });
+
+    // Hide whole sections if none of their cards match
+    allSections.forEach(function(section){
+      var cards = section.querySelectorAll('.card');
+      if(cards.length === 0) return;
+      var anyVisible = Array.prototype.some.call(cards, function(c){
+        return !c.classList.contains('hidden-card');
+      });
+      section.classList.toggle('hidden-card', !anyVisible);
+    });
+
+    noResults.classList.toggle('show', q !== '' && visibleCount === 0);
+  });
+
+  // Highlight active sidebar link while scrolling
+  var sidebarLinks = Array.prototype.slice.call(document.querySelectorAll('.sidebar a'));
+  var sections = sidebarLinks.map(function(link){
+    return document.getElementById(link.getAttribute('href').slice(1));
+  });
+
+  window.addEventListener('scroll', function(){
+    var pos = window.scrollY + 120;
+    var currentIndex = 0;
+    sections.forEach(function(sec, i){
+      if(sec && sec.offsetTop <= pos) currentIndex = i;
+    });
+    sidebarLinks.forEach(function(link, i){
+      link.classList.toggle('active', i === currentIndex);
+    });
+  });
+})();
+</script>
+</body>
+</html>
